@@ -331,16 +331,16 @@ client.on('interactionCreate', async interaction => {
   }
 
 if (
-  !interaction.member.roles.includes(
+  !interaction.member.roles.cache.has(
     ADMIN_ROLE_ID
   )
 ) {
-    return interaction.reply({
-      flags: 64,
-      content:
-        '❌ Only Tavern Staff may use this command.'
-    });
-  }
+  return interaction.reply({
+    flags: 64,
+    content:
+      '❌ Only Tavern Staff may use this command.'
+  });
+}
 
   if (interaction.commandName === 'forceopen') {
 
