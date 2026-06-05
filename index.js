@@ -12,20 +12,19 @@ const {
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers
   ]
 });
 
 // ===================== CONFIG =====================
-
-// Staff role allowed to use commands
-const ADMIN_ROLE_ID = '905240429052698665';
 
 // Channel that gets opened/closed
 const CHANNEL_ID = '1512559078864588913';
 
 // Adult Swim role
 const ROLE_ID = '1512557689815957695';
+
+// Staff role allowed to use commands
+const ADMIN_ROLE_ID = '905240429052698665';
 
 // General chat announcement channel
 const ANNOUNCEMENT_CHANNEL_ID = '683878059828576307';
@@ -331,11 +330,11 @@ client.on('interactionCreate', async interaction => {
     return;
   }
 
-  if (
-    !interaction.member.roles.cache.has(
-      ADMIN_ROLE_ID
-    )
-  ) {
+if (
+  !interaction.member.roles.includes(
+    ADMIN_ROLE_ID
+  )
+) {
     return interaction.reply({
       flags: 64,
       content:
