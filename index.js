@@ -18,6 +18,9 @@ const client = new Client({
 
 // ===================== CONFIG =====================
 
+// Staff role allowed to use commands
+const ADMIN_ROLE_ID = '905240429052698665';
+
 // Channel that gets opened/closed
 const CHANNEL_ID = '1512559078864588913';
 
