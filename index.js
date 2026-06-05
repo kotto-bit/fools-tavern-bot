@@ -10,7 +10,10 @@ const {
 } = require('discord.js');
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers
+  ]
 });
 
 // ===================== CONFIG =====================
@@ -62,6 +65,39 @@ function getCurrentTimeET() {
   return new Date().toLocaleString('en-US', {
     timeZone: TIMEZONE
   });
+}
+
+function getStatusText() {
+
+  const currentTime =
+    getCurrentTimeET();
+
+  let mode;
+
+  if (overrideMode === true) {
+    mode = 'Forced Open';
+  } else if (overrideMode === false) {
+    mode = 'Forced Closed';
+  } else {
+    mode = 'Automatic';
+  }
+
+  const currentlyOpen =
+    overrideMode === null
+      ? isAdultSwimTime()
+      : overrideMode;
+
+  const nextEvent =
+    currentlyOpen
+      ? 'Closes at 6:00 AM ET'
+      : 'Opens at 9:00 PM ET';
+
+  return {
+    mode,
+    currentlyOpen,
+    nextEvent,
+    currentTime
+  };
 }
 
 async function sendOpeningAnnouncement() {
@@ -250,7 +286,13 @@ client.once('clientReady', async () => {
       .setName('auto')
       .setDescription(
         'Return to automatic schedule'
-      )
+      ),
+    
+    new SlashCommandBuilder()
+    .setName('status')
+    .setDescription(
+      'Show current tavern status'
+    )
 
   ].map(cmd => cmd.toJSON());
 
@@ -284,6 +326,18 @@ client.on('interactionCreate', async interaction => {
 
   if (!interaction.isChatInputCommand()) {
     return;
+  }
+
+  if (
+    !interaction.member.roles.cache.has(
+      ADMIN_ROLE_ID
+    )
+  ) {
+    return interaction.reply({
+      flags: 64,
+      content:
+        '❌ Only Tavern Staff may use this command.'
+    });
   }
 
   if (interaction.commandName === 'forceopen') {
@@ -350,6 +404,48 @@ client.on('interactionCreate', async interaction => {
       ephemeral: true,
       content:
         '⏰ Automatic schedule restored.'
+    });
+
+  }
+
+  if (interaction.commandName === 'status') {
+
+    const status =
+      getStatusText();
+
+    const embed =
+      new EmbedBuilder()
+        .setTitle(
+          "🍻 The Fool's Tavern Status"
+        )
+        .addFields(
+          {
+            name: 'Mode',
+            value: status.mode,
+            inline: true
+          },
+          {
+            name: 'State',
+            value:
+              status.currentlyOpen
+                ? '🟢 Open'
+                : '🔴 Closed',
+            inline: true
+          },
+          {
+            name: 'Current Time (ET)',
+            value: status.currentTime
+          },
+          {
+            name: 'Next Event',
+            value: status.nextEvent
+          }
+        )
+        .setImage(TAVERN_IMAGE);
+
+    return interaction.reply({
+      flags: 64,
+      embeds: [embed]
     });
 
   }
