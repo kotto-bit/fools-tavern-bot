@@ -84,6 +84,64 @@ function getStatusText() {
     mode = 'Automatic';
   }
 
+  function getTimeRemaining() {
+
+    const now = new Date();
+
+    const currentHour =
+      getCurrentHourET();
+
+    let targetHour;
+
+    const currentlyOpen =
+      overrideMode === null
+        ? isAdultSwimTime()
+        : overrideMode;
+
+    if (currentlyOpen) {
+
+      targetHour = END_HOUR;
+
+    } else {
+
+      targetHour = START_HOUR;
+
+    }
+
+    let hoursRemaining =
+      targetHour - currentHour;
+
+    if (hoursRemaining < 0) {
+      hoursRemaining += 24;
+    }
+
+    const currentMinute =
+      Number(
+        new Intl.DateTimeFormat(
+          'en-US',
+          {
+            minute: 'numeric',
+            timeZone: TIMEZONE
+          }
+        ).format(now)
+      );
+
+    let minutesRemaining =
+      60 - currentMinute;
+
+    if (minutesRemaining === 60) {
+      minutesRemaining = 0;
+    } else {
+      hoursRemaining--;
+    }
+
+    if (hoursRemaining < 0) {
+      hoursRemaining += 24;
+    }
+
+    return `${hoursRemaining}h ${minutesRemaining}m`;
+  }
+
   const currentlyOpen =
     overrideMode === null
       ? isAdultSwimTime()
@@ -289,7 +347,7 @@ client.once('clientReady', async () => {
       .setDescription(
         'Return to automatic schedule'
       ),
-    
+
     new SlashCommandBuilder()
     .setName('status')
     .setDescription(
@@ -298,12 +356,27 @@ client.once('clientReady', async () => {
 
   ].map(cmd => cmd.toJSON());
 
-  const rest =
-    new REST({ version: '10' })
-      .setToken(process.env.TOKEN);
+ const rest =
+  new REST({ version: '10' })
+    .setToken(process.env.TOKEN);
 
 const GUILD_ID = '347384047657287692';
 
+// Delete old global commands
+await rest.put(
+  Routes.applicationCommands(
+    client.user.id
+  ),
+  {
+    body: []
+  }
+);
+
+console.log(
+  'Cleared old global commands.'
+);
+
+// Register guild commands
 await rest.put(
   Routes.applicationGuildCommands(
     client.user.id,
@@ -314,9 +387,9 @@ await rest.put(
   }
 );
 
-  console.log(
-    'Slash commands registered.'
-  );
+console.log(
+  'Slash commands registered.'
+);
 
   await updateChannel();
 
@@ -333,6 +406,53 @@ client.on('interactionCreate', async interaction => {
     return;
   }
 
+// PUBLIC STATUS COMMAND
+if (interaction.commandName === 'status') {
+
+  const status =
+    getStatusText();
+
+  const embed =
+    new EmbedBuilder()
+      .setTitle(
+        "🍻 The Fool's Tavern Status"
+      )
+      .addFields(
+        {
+          name: 'Mode',
+          value: status.mode,
+          inline: true
+        },
+        {
+          name: 'State',
+          value:
+            status.currentlyOpen
+              ? '🟢 Open'
+              : '🔴 Closed',
+          inline: true
+        },
+        {
+          name: 'Current Time (ET)',
+          value: status.currentTime
+        },
+        {
+          name: 'Next Event',
+          value: status.nextEvent
+        },
+        {
+          name: 'Time Remaining',
+          value: getTimeRemaining()
+        }
+      )
+      .setImage(TAVERN_IMAGE);
+
+  return interaction.reply({
+    embeds: [embed]
+  });
+
+}
+
+// STAFF-ONLY COMMANDS
 if (
   !interaction.member.roles.cache.has(
     ADMIN_ROLE_ID
@@ -345,7 +465,7 @@ if (
   });
 }
 
-  if (interaction.commandName === 'forceopen') {
+if (interaction.commandName === 'forceopen') {
 
     overrideMode = true;
 
@@ -409,48 +529,6 @@ if (
       ephemeral: true,
       content:
         '⏰ Automatic schedule restored.'
-    });
-
-  }
-
-  if (interaction.commandName === 'status') {
-
-    const status =
-      getStatusText();
-
-    const embed =
-      new EmbedBuilder()
-        .setTitle(
-          "🍻 The Fool's Tavern Status"
-        )
-        .addFields(
-          {
-            name: 'Mode',
-            value: status.mode,
-            inline: true
-          },
-          {
-            name: 'State',
-            value:
-              status.currentlyOpen
-                ? '🟢 Open'
-                : '🔴 Closed',
-            inline: true
-          },
-          {
-            name: 'Current Time (ET)',
-            value: status.currentTime
-          },
-          {
-            name: 'Next Event',
-            value: status.nextEvent
-          }
-        )
-        .setImage(TAVERN_IMAGE);
-
-    return interaction.reply({
-      flags: 64,
-      embeds: [embed]
     });
 
   }
