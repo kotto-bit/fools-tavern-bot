@@ -69,6 +69,64 @@ function getCurrentTimeET() {
   });
 }
 
+function getTimeRemaining() {
+
+  const now = new Date();
+
+  const currentHour =
+    getCurrentHourET();
+
+  let targetHour;
+
+  const currentlyOpen =
+    overrideMode === null
+      ? isAdultSwimTime()
+      : overrideMode;
+
+  if (currentlyOpen) {
+
+    targetHour = END_HOUR;
+
+  } else {
+
+    targetHour = START_HOUR;
+
+  }
+
+  let hoursRemaining =
+    targetHour - currentHour;
+
+  if (hoursRemaining < 0) {
+    hoursRemaining += 24;
+  }
+
+  const currentMinute =
+    Number(
+      new Intl.DateTimeFormat(
+        'en-US',
+        {
+          minute: 'numeric',
+          timeZone: TIMEZONE
+        }
+      ).format(now)
+    );
+
+  let minutesRemaining =
+    60 - currentMinute;
+
+  if (minutesRemaining === 60) {
+    minutesRemaining = 0;
+  } else {
+    hoursRemaining--;
+  }
+
+  if (hoursRemaining < 0) {
+    hoursRemaining += 24;
+  }
+
+  return `${hoursRemaining}h ${minutesRemaining}m`;
+}
+
 function getStatusText() {
 
   const currentTime =
@@ -82,64 +140,6 @@ function getStatusText() {
     mode = 'Forced Closed';
   } else {
     mode = 'Automatic';
-  }
-
-  function getTimeRemaining() {
-
-    const now = new Date();
-
-    const currentHour =
-      getCurrentHourET();
-
-    let targetHour;
-
-    const currentlyOpen =
-      overrideMode === null
-        ? isAdultSwimTime()
-        : overrideMode;
-
-    if (currentlyOpen) {
-
-      targetHour = END_HOUR;
-
-    } else {
-
-      targetHour = START_HOUR;
-
-    }
-
-    let hoursRemaining =
-      targetHour - currentHour;
-
-    if (hoursRemaining < 0) {
-      hoursRemaining += 24;
-    }
-
-    const currentMinute =
-      Number(
-        new Intl.DateTimeFormat(
-          'en-US',
-          {
-            minute: 'numeric',
-            timeZone: TIMEZONE
-          }
-        ).format(now)
-      );
-
-    let minutesRemaining =
-      60 - currentMinute;
-
-    if (minutesRemaining === 60) {
-      minutesRemaining = 0;
-    } else {
-      hoursRemaining--;
-    }
-
-    if (hoursRemaining < 0) {
-      hoursRemaining += 24;
-    }
-
-    return `${hoursRemaining}h ${minutesRemaining}m`;
   }
 
   const currentlyOpen =
