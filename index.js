@@ -31,7 +31,7 @@ const ANNOUNCEMENT_CHANNEL_ID = '683878059828576307';
 
 // Tavern image
 const TAVERN_IMAGE =
-  'https://cdn.discordapp.com/attachments/326881404870852608/1512578646978724012/1edab9ff0ac690ce24ae6b21b844ce74de18098a.png';
+  'https://cdn.discordapp.com/attachments/326881404870852608/1512973310588096562/aha-aha-the-elation.gif';
 
 // Schedule
 const START_HOUR = 21; // 9 PM ET
@@ -419,12 +419,7 @@ if (interaction.commandName === 'status') {
       )
       .addFields(
         {
-          name: 'Mode',
-          value: status.mode,
-          inline: true
-        },
-        {
-          name: 'State',
+          name: 'Status',
           value:
             status.currentlyOpen
               ? '🟢 Open'
