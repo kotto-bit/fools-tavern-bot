@@ -17,7 +17,10 @@ const client = new Client({
 
 // ===================== CONFIG =====================
 
-// Channel that gets opened/closed
+// category that gets opened/closed
+const CATEGORY_ID = '1512558575501705296';
+
+// main channel
 const CHANNEL_ID = '1512559078864588913';
 
 // Adult Swim role
@@ -276,14 +279,14 @@ async function sendClosingWarning() {
 async function updateChannel() {
   try {
 
-    const channel =
+    const category =
       await client.channels.fetch(
-        CHANNEL_ID
+        CATEGORY_ID
       );
 
-    if (!channel) {
+    if (!category) {
       console.log(
-        'Adult Swim channel not found.'
+        'Adult Swim category not found.'
       );
       return;
     }
@@ -356,7 +359,7 @@ async function updateChannel() {
       return;
     }
 
-    await channel.permissionOverwrites.edit(
+    await category.permissionOverwrites.edit(
       ROLE_ID,
       {
         ViewChannel: shouldBeVisible
@@ -533,10 +536,10 @@ if (interaction.commandName === 'forceopen') {
 
     overrideMode = true;
 
-    const channel =
-      await client.channels.fetch(CHANNEL_ID);
+  const category =
+    await client.channels.fetch(CATEGORY_ID);
 
-    await channel.permissionOverwrites.edit(
+  await category.permissionOverwrites.edit(
       ROLE_ID,
       {
         ViewChannel: true
@@ -559,10 +562,10 @@ if (interaction.commandName === 'forceopen') {
 
     overrideMode = false;
 
-    const channel =
-      await client.channels.fetch(CHANNEL_ID);
+    const category =
+      await client.channels.fetch(CATEGORY_ID);
 
-    await channel.permissionOverwrites.edit(
+    await category.permissionOverwrites.edit(
       ROLE_ID,
       {
         ViewChannel: false
