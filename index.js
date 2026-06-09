@@ -335,7 +335,7 @@ async function updateChannel() {
     // Startup sync
     if (lastState === null) {
 
-      await channel.permissionOverwrites.edit(
+      await category.permissionOverwrites.edit(
         ROLE_ID,
         {
           ViewChannel: shouldBeVisible
