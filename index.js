@@ -43,6 +43,7 @@ const TIMEZONE = 'America/New_York';
 let lastState = null;
 let startupComplete = false;
 let overrideMode = null;
+let warningSentToday = false;
 
 // null = automatic schedule
 // true = forced open
@@ -240,6 +241,38 @@ async function sendClosingAnnouncement() {
   }
 }
 
+async function sendClosingWarning() {
+
+  try {
+
+    const tavernChannel =
+      await client.channels.fetch(
+        CHANNEL_ID
+      );
+
+    if (!tavernChannel) {
+      return;
+    }
+
+    await tavernChannel.send(
+      '⏳ **Last call!** The Fool\'s Tavern closes in **30 minutes**. Finish your drinks and wrap up your conversations before 6:00 AM ET.'
+    );
+
+    console.log(
+      `[${getCurrentTimeET()}] 30-minute closing warning sent.`
+    );
+
+  } catch (err) {
+
+    console.error(
+      'Closing warning failed:',
+      err
+    );
+
+  }
+
+}
+
 async function updateChannel() {
   try {
 
@@ -259,6 +292,42 @@ async function updateChannel() {
       overrideMode === null
         ? isAdultSwimTime()
         : overrideMode;
+    
+    const currentHour =
+      getCurrentHourET();
+
+    const currentMinute =
+      Number(
+        new Intl.DateTimeFormat(
+          'en-US',
+          {
+            minute: 'numeric',
+            timeZone: TIMEZONE
+          }
+        ).format(new Date())
+      );
+
+    // 5:30 AM warning
+    if (
+      shouldBeVisible &&
+      currentHour === 5 &&
+      currentMinute >= 30 &&
+      !warningSentToday
+    ) {
+
+      await sendClosingWarning();
+
+      warningSentToday = true;
+
+    }
+
+    // Reset after closing
+    if (
+      currentHour === 21 &&
+      warningSentToday
+    ) {
+      warningSentToday = false;
+    }
 
     // Startup sync
     if (lastState === null) {
