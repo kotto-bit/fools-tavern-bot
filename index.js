@@ -34,7 +34,7 @@ const ANNOUNCEMENT_CHANNEL_ID = '683878059828576307';
 
 // Tavern image
 const TAVERN_IMAGE =
-  'https://klipy.com/gifs/sparxie-hitting-sparkle';
+  'https://cdn.discordapp.com/attachments/326881404870852608/1531523106131148820/3IWrHVObIXLmAFo.gif?ex=6a69858a&is=6a68340a&hm=232ee4f78b4ffb1a428ce99842104032f26c5639eb1d2c00ebb45cfd2dd59928&';
 
 // Tavern Close image
 const TAVERN_IMAGE_CLOSE =
@@ -187,7 +187,7 @@ async function sendOpeningAnnouncement() {
         "The Fool's Tavern is open!"
       )
       .setDescription(
-        "Aha invites you all to relish The Elation!\n\n- *Managed by Sparkle Bot"
+        "Aha invites you all to relish The Elation!\n\n- *Managed by Sparkle Bot.*"
       )
       .setImage(TAVERN_IMAGE);
 
@@ -266,7 +266,7 @@ async function sendClosingWarning() {
       .setDescription(
         "The Fool's Tavern closes in **30 minutes**.\n\nFinish up before **Aha** kicks you out!"
       )
-      .setImage('https://klipy.com/gifs/sparx-sparx-ie');
+      .setImage('https://cdn.discordapp.com/attachments/326881404870852608/1531523123243909250/7cKrgbAajmFNWb7.gif?ex=6a69858e&is=6a68340e&hm=bc41d008446e39c55fa03467adc2507cdf516276a1889c4ee25d9f19644b8422&');
 
     await tavernChannel.send({
       embeds: [embed]
