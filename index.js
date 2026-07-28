@@ -34,6 +34,10 @@ const ANNOUNCEMENT_CHANNEL_ID = '683878059828576307';
 
 // Tavern image
 const TAVERN_IMAGE =
+  'https://klipy.com/gifs/sparxie-hitting-sparkle';
+
+// Tavern Close image
+const TAVERN_IMAGE_CLOSE =
   'https://cdn.discordapp.com/attachments/326881404870852608/1512973310588096562/aha-aha-the-elation.gif';
 
 // Schedule
@@ -180,10 +184,10 @@ async function sendOpeningAnnouncement() {
 
     const embed = new EmbedBuilder()
       .setTitle(
-        "🌙 The Fool's Tavern is open!"
+        "The Fool's Tavern is open!"
       )
       .setDescription(
-        "Pull up a chair, grab a drink, and enjoy the late-night hours.\n\nDoors close at 6:00 AM ET."
+        "Aha invites you all to relish The Elation!\n\n- *Managed by Sparkle Bot"
       )
       .setImage(TAVERN_IMAGE);
 
@@ -224,9 +228,9 @@ async function sendClosingAnnouncement() {
     const embed = new EmbedBuilder()
       .setTitle('☀️ Last call.')
       .setDescription(
-        "The Fool's Tavern has closed for the morning.\n\nWe'll reopen tonight at 9:00 PM ET."
+        "The Fool's Tavern has closed for the morning.\n\nThe Elation will return soon!"
       )
-      .setImage(TAVERN_IMAGE);
+      .setImage(TAVERN_IMAGE_CLOSE);
 
     await announcementChannel.send({
       embeds: [embed]
@@ -257,9 +261,16 @@ async function sendClosingWarning() {
       return;
     }
 
-    await tavernChannel.send(
-      '⏳ **Last call!** The Fool\'s Tavern closes in **30 minutes**. Finish your drinks and wrap up your conversations before 6:00 AM ET.'
-    );
+    const embed = new EmbedBuilder()
+      .setTitle('⏳ Last Call!')
+      .setDescription(
+        "The Fool's Tavern closes in **30 minutes**.\n\nFinish up before **Aha** kicks you out!"
+      )
+      .setImage('https://klipy.com/gifs/sparx-sparx-ie');
+
+    await tavernChannel.send({
+      embeds: [embed]
+    });
 
     console.log(
       `[${getCurrentTimeET()}] 30-minute closing warning sent.`
